@@ -49,7 +49,7 @@ const filters = [
 
 export function ProductFilters() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = new URLSearchParams(useSearchParams().toString());
   const searchValues = Array.from(searchParams.entries());
 
   return (

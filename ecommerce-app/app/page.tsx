@@ -16,11 +16,12 @@ interface Props {
     color?: string
     category?: string
     size?: string
+    search?: string
   }
 }
 
 export default async function Page({ searchParams}: Props) {
-  const { date = "desc", price, color, category, size } = searchParams;
+  const { date = "desc", price, color, category, size, search } = searchParams;
   const priceOrder = price ? `| order(price ${price})` : "";
   const dateOrder = date ? `| order(_createdAt ${date})` : "";
   const order = `${priceOrder}${dateOrder}`
@@ -28,8 +29,10 @@ export default async function Page({ searchParams}: Props) {
   const productFilter = `_type == "product"`
   const colorFilter = color ? `&& "${color}" in colors` : ""
   const sizeFilter = size ? `&& "${size}" in sizes` : ""
+  const searchFilter = search ? `&& (name match "${search}" || description match "${search}")`
+  : "";
   const categoryFilter = category ? `&& "${category}" in categories` : ""
-  const filter = `*[${productFilter}${colorFilter}${sizeFilter}${categoryFilter}]`
+  const filter = `*[${productFilter}${colorFilter}${sizeFilter}${categoryFilter}${searchFilter}]`
   
   const products = await client.fetch<SanityProduct[]>(
     groq`${filter} ${order} {
